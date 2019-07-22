@@ -13,3 +13,6 @@ awk作为一个强大的文本处理工具，可以把文本处理成想要的�
 
 #### git reset --merge
 撤销commit但是不动工作区
+
+#### git commit -c COMMITID
+使用commit对象进行本次提交
