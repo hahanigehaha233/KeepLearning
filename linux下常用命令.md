@@ -10,3 +10,6 @@
 #### awk
 awk作为一个强大的文本处理工具，可以把文本处理成想要的格式。
 `ls -lh | awk 'print{ $1}'`输出ls -lh的第一列。
+
+#### git reset --merge
+撤销commit但是不动工作区
