@@ -140,6 +140,8 @@ Java堆分为新生代和老年代，这样就可以根据各个年代的特点�
 [安全点](https://blog.csdn.net/youyou1543724847/article/details/52728148)
 
 ## 垃圾回收器
+[回收器介绍](https://www.breakyizhan.com/javamianshiti/2856.html)
+
 ### Serial
 在JDK1.3之前，是新生代的唯一选择，单线程收集，在新生代采用复制算法，在老年代采用标记-整理算法，会“Stop the world”。
 <div align=center>
