@@ -195,10 +195,35 @@ CMS（Concurrent Mark Sweep）收集器是一种以获取最短回收停顿时�
 - CMS无法收集到标记过程之后的垃圾
 - 碎片的产生
 
+
+### G1收集器（重点）
+与其他收集器相比，G1收集器的特点是：
+- 并行与并发：G1能充分利用多CPU、多核环境下的硬件优势，使用多个CPU来缩短Stop-The-World停顿的时间，部分其他收集器原本需要停顿Java线程的GC动作，G1收集器仍然可以通过并发的方式让Java程序继续执行。
+- 分代收集：可以采用不同的方式去处理新创建的对象和已经存活了一段时间的对象。
+- 空间整合：从整体上看，是基于“标记-整理”，从局部上看是基于“复制”，不会产生太多的内存碎片。
+- 可预测的停顿：可以建立一个明确的停顿时间模型，能让使用者明确指定在一个长度为M毫秒的时间片段内，消耗在垃圾收集上的时间不得超过N毫秒，这几乎已经是实时Java（RTSJ）的垃圾收集器的特征了。
+
+
+
 ## GC触发条件
 young GC：当young gen中的eden区分配满的时候触发。注意young GC中有部分存活对象会晋升到old gen，所以young GC后old gen的占用量通常会有所升高。
 
 full GC：当准备要触发一次young GC时，如果发现统计数据说之前young GC的平均晋升大小比目前old gen剩余的空间大，则不会触发young GC而是转为触发full GC（因为HotSpot VM的GC里，除了CMS的concurrent collection之外，其它能收集old gen的GC都会同时收集整个GC堆，包括young gen，所以不需要事先触发一次单独的young GC）；或者，如果有perm gen的话，要在perm gen分配空间但已经没有足够空间时，也要触发一次full GC；或者System.gc()、heap dump带GC，默认也是触发full GC。
+
+## 分配原则
+- 对象优先在Eden区分配，如果不够的话发生Minor GC，但是如果Surivor空间不够的话，通过分配担保放入老年代。
+- 大对象直接进入老年代：大对象是指需要大量连续内存空间的Java对象，比如很长的字符串和数组，可以设置。
+- 长期存活的对象将进入老年代：每次的Minor GC都会增加年龄，直到进入老年代或者被回收
+- 动态判断年龄：为了更好地适应不同程序内存状况，虚拟机并不硬性要求对象年龄达到MaxTenuringThreshold才能晋升老年代，如果在Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入年老代。
+- 发生Minor GC之前，虚拟机会先检查年老代最大可用的连续空间是否大于新生代所有对象的总空间，如果条件成立，那么Minor GC可以确保是安全的。
+
+如果不成立，则虚拟机会查看HandlePromotionFailure设置值是否允许担保失败。
+
+如果允许，那么会继续检查年老代最大可用连续空间是否大于历次晋升到年老代对象的平均大小，如果大于，将尝试进行一次Minor GC,尽管这次Minor GC是有风险的。
+
+如果小于，或者HandlePromotionFailure设置不允许冒险，那这时候改为进行一次Full GC。
+
+[参考](https://blog.csdn.net/hlx156/article/details/78849536)
 
 ---
 
