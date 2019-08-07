@@ -33,14 +33,26 @@ Java堆也是垃圾收集器管理的主要区域，因此很多时候也被称�
 #### 方法区（Method Area）
 和Java堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分，但是它有一个别名叫做Non-Heap（非堆），目的是与Java堆区分开来。有OutOfMemoryError异常。
 
+
+**重要：** JDK8中永久代移除，将Class Metadata转入Native Memory，字符串常量池放入Java Heap
+
+元空间是方法区的一种实现方式
+
+[元空间实现](https://www.infoq.cn/article/Java-PERMGEN-Removed/?utm_campaign=infoq_content)
+
+
 #### 运行时常量池
 Class文件中除了有类的版本、字段、方法、接口等描述信息往外，还有一项信息是常量池（Constant Pool Table），用于存放编译器生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池中存放。这个池子是每一个类私有的。并不是一成不变的。在方法区中。
 #### 字符串常量池
-也是一种运行时的常量池，在运行的时候字符串常量会存储在这里，可以通过String.intern加入新的常量。（在堆中）
+也是一种运行时的常量池，在运行的时候字符串常量会存储在这里，可以通过String.intern加入新的常量。（在堆中JDK8）
 
 [字符串常量池](https://www.zhihu.com/question/22739143/answer/113822382)
 
 #### 直接内存
+
+<div align=center>
+<img src="../img/JVM内存分布.jpg">
+</div>
 
 ## 逃逸分析
 逃逸分析，是一种可以有效减少Java 程序中同步负载和内存堆分配压力的跨函数全局数据流分析算法。通过逃逸分析，Java Hotspot编译器能够分析出一个新的对象的引用的使用范围从而决定是否要将这个对象分配到堆上。
