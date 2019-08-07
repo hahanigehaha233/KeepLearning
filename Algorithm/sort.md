@@ -13,3 +13,33 @@
 - 桶个数 = 区间长度 - 桶长度 + 1
 
 - [桶排序动图](https://blog.csdn.net/developer1024/article/details/79770240)
+
+
+## 计数排序
+时间复杂度 $O(N+K)$
+
+空间复杂度 $O(N+K)$，其中，K为待排序数组中最大值。需要在最大值不大于数组长度太多的情况下比较节约空间。
+
+```
+public int[] countsort(int[] nums){
+    int len = nums.length;
+    int num_max = Integer.MIN_VALUE;
+    int num_min = Integer.MAX_VALUE;
+    for(int i = 0;i < len;++i){
+        if(num_max < nums[i]) num_max = nums[i];
+        if(num_min > nums[i]) num_min = nums[i];
+    }
+    int[] counts = new int[num_max - num_min + 1];
+    for(int i = 0 ;i < len;++i){
+        counts[nums[i]] ++;
+    }
+    for(int i = 1;i < counts.length;++i){
+        counts[i] += counts[i-1];
+    }
+    int[] res = new int[len];
+    for(int i = len;i >=0;--i){
+        res[--counts[nums[i]]] = nums[i];
+    }
+    return res;
+}
+```
