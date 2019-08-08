@@ -52,3 +52,8 @@ public class number5 {
 }
 
 ```
+
+## 最长公共子序列和最长公共子串有区别
+子序列可以分开，子串必须连续
+
+[子串问题-leetcode](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
