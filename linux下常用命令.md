@@ -4,6 +4,9 @@
 通过`find . -name xxx`查找当前目录下文件名为xxx的文件。
 通过`find . -iname xxx`进行正则匹配。
 
+
+### 查找文件内容
+通过`grep 'XXX' -r .`进行查找
 #### history
 查看历史命令，2000条
 
