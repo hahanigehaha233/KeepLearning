@@ -10,10 +10,54 @@ IPC是指Inter-Process Communication，进程间通信，POSIX IPC是指由`POSI
 ### Epoll
 属于IO多路复用技术的一种具体实现，以网络套接字为例，通过一个进程管理多个socket流，并且不占用额外的CPU轮询时间。
 
-具体原理是：每收到一个套接字任务时将其放入一个epoll实例（eventpoll），每一个接受到的套接字都会放入eventpoll中，当套接字任务完成，就会开启中断执行程序，将该套接字任务加入等待队列rdlist中。
+具体原理是：每收到一个套接字任务时将其放入一个epoll实例（eventpoll），这是由一个红黑树进行维护的(rbr),红黑树中的每个节点都是一个IO事件（epitem）。当一个IO事件准备就绪之后，回调函数会将其放入rdlist中，当epoll_wait()函数重新激活的时候，会将epitem逐一拷贝到events参数中。
 
-与Select的对比，相比于Select，服务器每次都需要将所有的套接字都装入内核态轮询，这个操作的资源消耗比较大，epoll的解决方法是通过将就绪的套接字加入到rdlist中，当程序执行到epoll_wait时，如果rdlist已经引用了socket，那么epoll_wait直接返回，如果rdlist为空，阻塞进程。
+<div align = center>
+<img src="../img/epoll数据结构.jpg"/>
+</div>
+
+与Select的对比，相比于Select，服务器每次都需要将所有的套接字都装入内核态轮询，这个操作的资源消耗比较大，epoll的解决方法是1.直接在内核态中创建一个属于epoll的高速缓冲区cache用来存储，避免了大量了内存复制。2.通过将就绪的套接字加入到rdlist中，当程序执行到epoll_wait时，如果rdlist已经引用了socket，那么epoll_wait直接返回（存在几个内存复制），如果rdlist为空，阻塞进程。
+
+
 
 <div align = center>
 <img src="../img/epoll对比.jpg"/>
 </div>
+
+
+#### LT和ET的区别
+Level Trigger水平触发模式和Edge Trigger边缘触发模式，主要针对的是两个event事件
+EPOLLIN和EPOLLOUT的触发机制，在LT下，读写缓冲区是否变化都可以触发这两个事件，而在ET下，只有当读缓冲区有无到满（触发EPOLLIN），或者写缓冲区从满到无（触发EPOLLOUT）才会触发相应事件。
+
+注意在Socket连接建立的时候，会触发EPOLLOUT事件，（不会触发EPOLLIN是因为建立连接的请求并不是发送到新建立的Socket上的，而是通过accept进行构建）。
+在关闭连接的时候，会触发EPOLLOUT和EPOLLIN两个事件。所以总结如下：
+
+- 在LT模式下EPOLLIN：
+  - 当有新的数据写入时
+  - 关闭连接的时候
+- 在LT模式下EPOLLOUT：
+  - 建立TCP连接的时候
+  - 关闭连接的时候
+  - 写缓冲区会一直触发
+- 在ET模式下EPOLLIN：
+  - 关闭连接的时候
+  - 读缓冲区从无到有
+- 在ET模式下EPOLLOUT：
+  - 关闭连接的时候
+  - 建立连接的时候
+  - 写缓冲区从有到无
+
+
+  <div align = center>
+  <img src="../img/LTET读.jpg"/>
+  </div>
+
+  <div align = center>
+  <img src="../img/LTET写.jpg"/>
+  </div>
+
+  [LT和ET的区别--图解](https://www.cnblogs.com/xiehongfeng100/p/4636118.html)
+
+  [LT和ET的区别--代码](https://www.zhihu.com/search?type=content&q=Linux%E7%9A%84Epoll)
+
+  [EPOLLIN和EPOLLOUT的触发机制](https://cloud.tencent.com/developer/article/1481046)
