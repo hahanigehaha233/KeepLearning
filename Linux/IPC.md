@@ -58,6 +58,8 @@ EPOLLIN和EPOLLOUT的触发机制，在LT下，读写缓冲区是否变化都可
 
   [LT和ET的区别--图解](https://www.cnblogs.com/xiehongfeng100/p/4636118.html)
 
-  [LT和ET的区别--代码](https://www.zhihu.com/search?type=content&q=Linux%E7%9A%84Epoll)
+  [LT和ET的区别--代码](https://www.zhihu.com/question/47002053/answer/794254562)
 
   [EPOLLIN和EPOLLOUT的触发机制](https://cloud.tencent.com/developer/article/1481046)
+
+  **注意：在accept阶段才会阻塞，并且该函数会返回一个新的套接字用于和客户端进行通信**
