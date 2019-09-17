@@ -7,6 +7,8 @@ IPC是指Inter-Process Communication，进程间通信，POSIX IPC是指由`POSI
 - 在一条消息可用时可用异步通知进程。
 - POSIX是在内核2.6.6之后才加入的。
 
+---
+
 ### Epoll
 属于IO多路复用技术的一种具体实现，以网络套接字为例，通过一个进程管理多个socket流，并且不占用额外的CPU轮询时间。
 
@@ -63,3 +65,9 @@ EPOLLIN和EPOLLOUT的触发机制，在LT下，读写缓冲区是否变化都可
   [EPOLLIN和EPOLLOUT的触发机制](https://cloud.tencent.com/developer/article/1481046)
 
   **注意：在accept阶段才会阻塞，并且该函数会返回一个新的套接字用于和客户端进行通信**
+
+---
+
+## 进程等待队列
+进程进入等待（阻塞）状态的一种方法，Epoll也是使用这种技术在epoll_wait()没有任务
+返回时阻塞的，它使用数据结构_wait_queue_head进行管理，每个要睡眠的进程就是其中的一个节点_wait_queue,设置了wake_up函数（在epoll中就是rdlist不为空）之后可以让进程进入休眠等待唤醒，这里存在两个回调函数，一个是socket完成之后epoll设置的回调，一个是对epoll_wait()唤醒的回调。
