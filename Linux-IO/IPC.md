@@ -35,7 +35,7 @@ EPOLLIN和EPOLLOUT的触发机制，在LT下，读写缓冲区是否变化都可
 在关闭连接的时候，会触发EPOLLOUT和EPOLLIN两个事件。所以总结如下：
 
 - 在LT模式下EPOLLIN：
-  - 当有新的数据写入时
+  - 当有新的数据写入读缓冲区时
   - 关闭连接的时候
 - 在LT模式下EPOLLOUT：
   - 建立TCP连接的时候
