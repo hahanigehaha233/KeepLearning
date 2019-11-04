@@ -54,6 +54,10 @@ events_是它关心的IO事件，由用户设置，revents_是目前活动的事
 #### Poller class
 其核心功能时调用poll()获得当前活跃的IO事件，然后填充调用方传入的activeChannels（使用fillActiveChannels()遍历），并且返回return的时间。
 
+### EventLoop class
+事件循环类，IO任务或者计算任务都可以使用runInLoop()注册到里面，EventLoopThread class会在startLoop()时生成一个新的线程作为IO线程，原来的线程作为主线程。
+
+
 #### runInLoop的含义
 即使在其他的线程中加入事件，也可以使得其在其IO线程中执行，完成异步调用。
 函数调用顺序：
