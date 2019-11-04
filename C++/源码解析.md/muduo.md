@@ -44,3 +44,35 @@ Buffer其实是一个Queue，从末尾写入数据，从头部读取数据。Tcp
 - 关闭listening fd，并设定重新打开时间。
 - 改用edge trigger如果漏掉一次accept，程序就再也收不到新连接。
 - 一直准备一个空闲描述符，等到满了的时候使用，使用了之后马上close。（多进程下回出现资源竞争的情况）
+
+## Reactor的关键结构
+
+#### Channel class
+每个fd会被Channel处理，为其IO事件分发不同的回调，例如ReadCallback、WriteCallback，用户不直接使用Channel，而是使用更加上层的TcpConnection。在Channel中，
+events_是它关心的IO事件，由用户设置，revents_是目前活动的事件，由EventLoop/Polller设置。
+
+#### Poller class
+其核心功能时调用poll()获得当前活跃的IO事件，然后填充调用方传入的activeChannels（使用fillActiveChannels()遍历），并且返回return的时间。
+
+#### runInLoop的含义
+即使在其他的线程中加入事件，也可以使得其在其IO线程中执行，完成异步调用。
+函数调用顺序：
+```
+IO线程内：
+runInLoop()->cb()
+IO线程外：
+runInLoop()->queueInLoop()->wakeup()->write()->poll()->handleRead()
+->doPendingFunctors()
+```
+
+时序图如下
+<div align=center>
+<img src="../../img/Reactor.png">
+</div>
+
+#### TimerQueue class
+其需要高效地组织目前未到期的Timer，能快速的根据当前时间找到已经到期的Timer，也要能够高效地添加和删除Timer。最简单的实现方式是按照到期时间使用线性表作为数据结构。
+
+另外一种做法是二叉堆组织优先队列，这种做法的复杂度降为$O(log N)$，但是C++标准中的make_heap()等函数不能高效的删除heap中间的某个元素，需要实现。
+
+还有一种做法是建立一个二叉搜索树（std::set或者std::map），map无法直接处理两个timer相同到期的情况，需要另外处理。
