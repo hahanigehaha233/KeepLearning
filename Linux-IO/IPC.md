@@ -68,6 +68,8 @@ EPOLLIN和EPOLLOUT的触发机制，在LT下，读写缓冲区是否变化都可
 
   [EPOLLIN和EPOLLOUT的触发机制](https://cloud.tencent.com/developer/article/1481046)
 
+[LT下一直触发写事件的解决办法](https://www.cnblogs.com/lchb/p/4895297.html)
+
   **注意：在accept阶段才会阻塞，并且该函数会返回一个新的套接字用于和客户端进行通信**
 
 - `EAGAIN`错误会在读缓冲区无数据或者写缓冲区满时发生。
