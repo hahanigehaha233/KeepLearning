@@ -80,3 +80,6 @@ runInLoop()->queueInLoop()->wakeup()->write()->poll()->handleRead()
 另外一种做法是二叉堆组织优先队列，这种做法的复杂度降为$O(log N)$，但是C++标准中的make_heap()等函数不能高效的删除heap中间的某个元素，需要实现。
 
 还有一种做法是建立一个二叉搜索树（std::set或者std::map），map无法直接处理两个timer相同到期的情况，需要另外处理。
+
+#### EventLoopThread class
+该类运行时会创建一个新的线程和一个新的EventLoop，满足one loop for each thread的设计理念。线程会在startloop中利用thread_create()进行创建。
