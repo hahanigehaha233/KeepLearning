@@ -10,6 +10,10 @@ IPC是指Inter-Process Communication，进程间通信，POSIX IPC是指由`POSI
 ---
 
 ### Epoll
+[Select和Epoll的对比](https://www.zhihu.com/question/20122137/answer/146866418)
+
+[复用、ETLT模型](https://zhuanlan.zhihu.com/p/87843750)
+
 属于IO多路复用技术的一种具体实现，以网络套接字为例，通过一个进程管理多个socket流，并且不占用额外的CPU轮询时间。
 
 具体原理是：每收到一个套接字任务时将其放入一个epoll实例（eventpoll），这是由一个红黑树进行维护的(rbr),红黑树中的每个节点都是一个IO事件（epitem）。当一个IO事件准备就绪之后，回调函数会将其放入rdlist中，当epoll_wait()函数重新激活的时候，会将epitem逐一拷贝到events参数中。
