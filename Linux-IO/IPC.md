@@ -12,11 +12,13 @@ IPC是指Inter-Process Communication，进程间通信，POSIX IPC是指由`POSI
 ### Epoll
 [Select和Epoll的对比](https://www.zhihu.com/question/20122137/answer/146866418)
 
-[复用、ETLT模型](https://zhuanlan.zhihu.com/p/87843750)
+[对复用的理解、ETLT模型](https://zhuanlan.zhihu.com/p/87843750)
 
 [EPOLL的惊群现象](https://blog.csdn.net/dog250/article/details/80837278)
 
 [Epoll中函数调用](https://blog.csdn.net/daaikuaichuan/article/details/88770427)
+
+[Epoll的源码分析](https://blog.csdn.net/li_haoren/article/details/94360012)
 
 属于IO多路复用技术的一种具体实现，以网络套接字为例，通过一个进程管理多个socket流，并且不占用额外的CPU轮询时间。
 
