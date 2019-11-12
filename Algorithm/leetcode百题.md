@@ -23,3 +23,91 @@ true \; \; \; s[i,j] \; is \\
 3. 更新r
 4. 以下一个字符为中心判断时，如果i没有超过r并且半径范围也在R内，则直接更新，并在下一个字符重复第四步。
 5. 如果i大于了r，或者等于R或者因为镜像节点边境问题，需要重新使用中心扩展。
+```
+string longestPalindrome(string s) {
+	int len = s.length();
+	if (len < 1) {
+		return "";
+	}
+
+	string ss;
+	for (int i = 0; i < len; ++i) {
+		ss += "#";
+		ss += s[i];
+	}
+	ss += "#";
+
+	int r = 0;
+	int c = 0;
+	int maxr = 0;
+	int maxc = 0;
+	len = ss.length();
+	int* p = new int[len];
+	memset(p, 0, len*sizeof(int));
+
+	for (int i = 0; i < len; ++i) {
+		if (i < r) {
+			p[i] = min(p[2 * c - i], r - i);
+		}
+		else {
+			p[i] = 1;
+		}
+		while (i - p[i] >= 0 && i + p[i] < len && ss[i - p[i]] == ss[i + p[i]]) {
+			p[i]++;
+		}
+		if (i + p[i] - 1 > r) {
+			r = i + p[i] - 1;
+			c = i;
+		}
+		if (maxr <= p[i]) {
+			maxr = p[i];
+			maxc = i;
+		}
+
+	}
+	return s.substr((maxc - maxr + 1) / 2, maxr - 1);
+}
+```
+
+### 2.公共子序列
+最长公共子序列可以使用动态规划算法，其动态方程是
+
+$P(i,j) = \left\{\begin{matrix}
+P(i-1,j-1) +1 \; \; \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; text1[i]\;==\;text2[j] \\
+Max(P(i-1,j),P(i,j-1)) \; \; \; text1[i]\;!=\;text2[j]
+\end{matrix}\right.$
+
+最后得到就是子序列长度
+```
+int longestCommonSubsequence(string text1, string text2) {
+	int len1 = text1.length();
+	int len2 = text2.length();
+	int** dp = new int*[len1];
+	for (int i = 0; i < len1; ++i) {
+		dp[i] = new int[len2];
+		memset(dp[i], 0, len2 * sizeof(int));
+	}
+	for (int i = 0; i < len1; ++i) {
+		if (text1[i] == text2[0]) {
+			dp[i][0] = 1;
+		}
+	}
+	for (int i = 0; i < len2; ++i) {
+		if (text2[i] == text1[0]) {
+			dp[0][i] = 1;
+		}
+	}
+	for (int i = 0; i < len1; ++i) {
+		for (int j = 0; j < len2; ++j) {
+			if (text1[i] == text2[j]) {
+				dp[i][j] = dp[i - 1][j - 1] + 1;
+			}
+			else {
+				dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+			}
+		}
+	}
+	return dp[len1 - 1][len2 - 1];
+
+}
+```
