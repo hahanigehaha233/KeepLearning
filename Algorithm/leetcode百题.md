@@ -111,3 +111,41 @@ int longestCommonSubsequence(string text1, string text2) {
 
 }
 ```
+
+### 3. 最长公共子串
+子串跟子序列相比，得到的结果是需要连续的，而且需要比较后保存最大值。可以在最长公共子序列上改进得到。
+```
+int findLength(vector<int>& A, vector<int>& B) {
+	int len1 = A.size();
+	int len2 = B.size();
+	int** dp = new int*[len1];
+	for (int i = 0; i < len1; ++i) {
+		dp[i] = new int[len2];
+		memset(dp[i], 0, len2 * sizeof(int));
+	}
+	for (int i = 0; i < len1; ++i) {
+		if (A[i] == B[0]) {
+			dp[i][0] = 1;
+		}
+	}
+	for (int i = 0; i < len2; ++i) {
+		if (A[0] == B[i]) {
+			dp[0][i] = 1;
+		}
+	}
+	int Max = 0;
+	for (int i = 1; i < len1; ++i) {
+		for (int j = 1; j < len2; ++j) {
+			if (A[i] == B[j]) {
+				dp[i][j] = dp[i - 1][j - 1] + 1;
+				Max = max(Max, dp[i][j]);
+			}
+			else {
+				dp[i][j] = 0;
+			}
+		}
+	}
+	return Max;
+}
+
+```
