@@ -149,3 +149,23 @@ int findLength(vector<int>& A, vector<int>& B) {
 }
 
 ```
+
+### 4.快速排序
+快排的传统写法需要将right的循环判断写在前面，这样做是为了先找到一个比他小的数，再找比它大的数，如果在左边没有比它大的数了，说明右边比它小的数就是它的位置，就算最后没有找到ij最后一次交换也是互相交换，这里提供另外一种高效写法
+```
+void quickSort(vector<int>& nums, int l, int r) {
+        if (l >= r) return;
+        int m = l + (r - l) / 2;
+        swap(nums[r], nums[m]);
+        int t = l;
+        for (int i = l; i < r; ++i) {
+            if (nums[i] < nums[r]) {
+                swap(nums[t++], nums[i]);
+            }
+        }
+        swap(nums[t], nums[r]);
+        quickSort(nums, l, t - 1);
+        quickSort(nums, t + 1, r);
+    }
+```
+这种写法先将mid放入最后，再从头开始比较，依次将比mid小的放入前面位置，到最后所有比mid小的都在前面，再讲mid放入正确位置。其他排序写法[参见](https://leetcode-cn.com/problems/sort-an-array/solution/c-ge-chong-jie-fa-tong-pai-xu-zui-kuai-by-da-li-wa/)
