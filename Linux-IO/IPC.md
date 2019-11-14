@@ -81,6 +81,12 @@ EPOLLIN和EPOLLOUT的触发机制，在LT下，读写缓冲区是否变化都可
 - `EAGAIN`错误会在读缓冲区无数据或者写缓冲区满时发生。
 ---
 
+#### EPOLLONESHOT
+注册了该事件的socket只会触发第一次的EPOLLIN或者EPOLLOUT事件，之后的事件便不会再触发，如果需要触发，
+要再次注册EPOLLIN事件
+
+---
+
 ## 进程等待队列
 进程进入等待（阻塞）状态的一种方法，Epoll也是使用这种技术在epoll_wait()没有任务
 返回时阻塞的，它使用数据结构_wait_queue_head进行管理，每个要睡眠的进程就是其中的一个节点_wait_queue,设置了wake_up函数（在epoll中就是rdlist不为空）之后可以让进程进入休眠等待唤醒，这里存在两个回调函数，一个是socket完成之后epoll设置的回调，一个是对epoll_wait()唤醒的回调。
