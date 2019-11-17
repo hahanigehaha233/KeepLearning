@@ -144,3 +144,105 @@ heap理所当然的没有迭代器。
 
 
 ---
+
+# 关联式容器
+关联式容器中的每一笔数据都有一个键值(key)和一个实值(value)。当元素被插入到关联式容器中时，容器内部结构便依照其键值大小，以某种特定规则将这个元素放于适当地位置。STL容器中的关联式容器都以红黑树作为实现，红黑树可以参考Algorithm中的tree.md中的描述。
+
+## set
+set中的实值就是其键值，所以不允许有两个相同的键值，我们无法使用set的迭代器去改变set的元素值，因为其关系到set的排列规则，所以set的迭代器被定义为静态的。（红黑树中实现了两种插入，可重复插入和不可重复插入）
+
+几乎所有的对set的操作，最后都是转调用RB-tree的操作。
+
+---
+
+## map
+map的特性是，所有元素都会根据元素的键值自动被排序。map的所有元素都是pair，同时拥有实值(value)和键值(key)。pair的第一元素被视为键值，第二元素被视为实值。
+
+键值作为排序规则的载体，不允许被更改，而实值则可以使用迭代器进行更改。
+
+map不允许拥有两个相同的键值。
+
+几乎所有的对map的操作，最后都是转调用RB-tree的操作
+
+---
+
+## multiset
+multiset的特性以及用法和set完全相同，唯一的差别在于它允许键值重复，插入操作调用的是底层的`insert_unique()`函数。
+
+---
+
+## multimap
+同上
+
+---
+
+## hashtable
+二叉搜索树具有对数平均时间的表现，但这样的表现是假设输入数据有足够的随机性。而hash表可以不用这样的随机性假设也可以达到对数平均时间。
+
+由于hash函数是一个多对一的映射关系，所以再好的hash函数也难免会发生hash碰撞，解决碰撞的方法有多种，包括线性探测散列、二次探测、开链等做法，每一种方法的到处效率各不相同--与array的填满成都有很大的关联。
+
+填充因子：负载系数，表格大小和表格中元素个数比，通常取0.5
+
+#### 线性探测(linear probing)
+最为传统的方法，将产生冲突的元素放入之后的表格中，平均情况是寻访一半的表格。
+
+#### 二次探测(quadratic probing)
+线性探测遇到冲突采取的是H+1,H+2依次对比，二次探测则是$H+1^{2}$,$H+2^{2}$ 进行探测。
+
+#### 开链(separate chaining)
+在每一个表格元素中维护一个list，如果冲突了则放入list中。STL就是采用这种做法。
+
+以下是hashtable的部分定义
+```
+
+template<class Value>
+struct __hashtable_node{
+  __hashtable_node* next;
+  Value val;
+};
+
+
+template<class Value, class Key, class HashFcn,
+        class ExtractKey, class EqualKey,
+        class Alloc>
+class hashtable{
+public:
+  typedef HashFcn hasher;
+  typedef EqualKey key_equal;
+  typedef size_t size_type;
+
+private:
+  hasher hash;Hash函数
+  key_equal equals;//判断键值是否相同的方法
+  ExtractKey get_key;//取出键值的方法
+
+  typedef __hashtable_node<Value> node; //hash元素节点
+  typedef simple_alloc<node, Alloc> node_allocator; //节点内存分配器
+
+  vector<node*, Alloc> buckets;//表格由vector完成
+  size_type num_elements; //元素数量
+
+public:
+  size_type bucket_count() const {return buckets.size();}
+};
+
+```
+- Value: 节点的实值类型
+- Key: 节点的键值类型
+- HashFcn: 函数函数
+- ExtractKey: 取出键值的方法
+- EqualKey: 判断键值相同的方法
+- Alloc: 空间配置器
+
+hashtable在构造时会从28个质数中找到第一个比n大的数来进行vector buckets的构造。
+
+表格进行重建时，首先会更新vecotr buckets，之后会计算表格中每一个__hashtable_node在新表格中的位置，然后进行迁移，最后将新旧两个buckets对调在释放内存。
+
+## hashset
+hashset底层也使用hashtable为底层机制，几乎所有的hashset操作，都只是转调用hashtable的操作行为而已。 唯一和set的不同就是hashset中没有自动排序。
+
+## hashmap
+hashmap的操作和map的几乎完全相同，唯一不同的就是hashmap中没有自动排序功能。
+
+## hashmultimap和hashmultiset
+同上
