@@ -150,6 +150,8 @@ int findLength(vector<int>& A, vector<int>& B) {
 
 ```
 
+---
+
 ### 4.快速排序
 快排的传统写法需要将right的循环判断写在前面，这样做是为了先找到一个比他小的数，再找比它大的数，如果在左边没有比它大的数了，说明右边比它小的数就是它的位置，就算最后没有找到ij最后一次交换也是互相交换，这里提供另外一种高效写法
 ```
@@ -169,3 +171,38 @@ void quickSort(vector<int>& nums, int l, int r) {
     }
 ```
 这种写法先将mid放入最后，再从头开始比较，依次将比mid小的放入前面位置，到最后所有比mid小的都在前面，再讲mid放入正确位置。其他排序写法[参见](https://leetcode-cn.com/problems/sort-an-array/solution/c-ge-chong-jie-fa-tong-pai-xu-zui-kuai-by-da-li-wa/)
+
+---
+
+### 5. 二分查找元素区间
+查找排序好的元素的区间问题，通过二分法将其化为$O(log_{2}^{N})$复杂度。
+- 二分的时候lo = mid + 1;不然的话会陷入死循环无法退出。
+- 利用一个变量去判断当前是左边界还是右边界。
+
+```
+int find(vector<int>& nums, int target, int left){
+	int lo = 0;
+	int hi = nums.size();
+	while(lo < hi){
+		int mid = (lo + hi) / 2;
+		if(nums[mid] > target || (left && mums[mid] == target)){
+			hi = mid;
+		}else{
+			lo = mid + 1;
+		}
+	}
+	return lo;
+}
+
+int searchRange(vector<int>& nums, int target){
+	vector<int> res{-1,-1};
+	int leftIndex = find(nums, target, true);
+	if(nums[leftIndex] != target || leftIndex == nums.size()){
+		return res;
+	}
+	res[0] = leftIndex;
+	res[1] = find(nums, target, false);
+	return res;
+}
+
+```
