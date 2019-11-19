@@ -1,3 +1,12 @@
+## 题目规划
+- 动态规划15道
+- 回溯法15道
+- 链表操作20道
+- 二叉树20道
+- 排序10道
+- 双指针10道
+- 字符串10道
+
 ### 1.回文子串
 回文子串可以使用动态规划解法，但是需要附加判定条件，因为回文子串并不是简单的寻找子序列，需要两个子串的位置相对相同。也可以使用Manacher（马拉车算法）。
 
@@ -178,6 +187,7 @@ void quickSort(vector<int>& nums, int l, int r) {
 查找排序好的元素的区间问题，通过二分法将其化为$O(log_{2}^{N})$复杂度。
 - 二分的时候lo = mid + 1;不然的话会陷入死循环无法退出。
 - 利用一个变量去判断当前是左边界还是右边界。
+- hi在定义为size()时边界处理更加方便。
 
 ```
 int find(vector<int>& nums, int target, int left){
@@ -205,4 +215,78 @@ int searchRange(vector<int>& nums, int target){
 	return res;
 }
 
+```
+
+### 6. 删除倒数第N个节点
+通过前后指针进行删除，在进行链表操作时，满足以下几点可以更快地操作：
+- 如果首节点有可能变更，则引入一个新的头节点res，并且`res->next = head`，在返回时`return res`。
+- 节点在进行删除、交换位置时，最好在其先驱节点上进行操作，因为删除和交换都需要其先驱节点，这在单向链表中很难得到。
+
+```
+ListNode* removeNthFromEnd(ListNode* head, int n) {
+		ListNode* res  = new ListNode(0);
+		res->next = head;
+
+		ListNode* lo = res;
+		ListNode* hi = res;
+		for(int i = 0;i < n;++i){
+				hi = hi->next;
+		}
+		while(hi->next != NULL){
+				hi = hi->next;
+				lo = lo->next;
+		}
+		lo->next = lo->next->next;
+		return res->next;
+}
+```
+
+### 7. 对两个有序链表进行整合
+注意操作顺序，没有什么难点
+```
+ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+		ListNode* res = new ListNode(0);
+		ListNode* ite = res;
+
+		while(l1 != NULL && l2 != NULL){
+				if(l1->val > l2->val){
+						ite->next = l2;
+						ite = ite->next;
+						l2 = l2->next;
+				}else{
+						ite->next = l1;
+						ite = ite->next;
+						l1 = l1->next;
+				}
+		}
+
+		if(l1 != NULL){
+				ite->next = l1;
+		}else{
+				ite->next = l2;
+		}
+		return res->next;
+}
+```
+
+### 8. 链表中的节点交换
+同上
+```
+ListNode* swapPairs(ListNode* head) {
+		ListNode* res = new ListNode(0);
+		res->next = head;
+
+		ListNode* ite = res;
+		while(ite->next != NULL && ite->next->next != NULL){
+				ListNode* t = ite->next;
+
+				ite->next = t->next;
+				t->next = ite->next->next;
+				ite->next->next = t;
+
+				ite = t;
+		}
+
+		return res->next;
+}
 ```
