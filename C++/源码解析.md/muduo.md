@@ -1,6 +1,15 @@
 ## Muduo
 [连接建立和发送数据](https://mp.weixin.qq.com/s?__biz=MzA3MzU5NDY5Mg==&mid=2648663545&idx=1&sn=4501df315181150dda713176135df077&chksm=872767d2b050eec43cb2f961db71d17a43d75898ddb01c7cff6c2e5e0852cabd89c06cda87e5&token=195924822&lang=zh_CN#rd)
 
+### TCPServer
+TCPServer的启动，会伴随着线程池的启动，池中有固定数量的线程，其中一个会被作为新连接监听的线程（因为是one EventLoop for each thread），监听到的新连接会放入下一个线程中的EventLoop保持负载均衡。
+- MessageCallback()是每次消息到达的回调。
+- ConnectionCallback()是连接改变状态的回调。
+- NewConnectionCallback()是Acceptor注册的新连接到达的回调。
+
+server_.start()会对start执行情况进行判断，如果已经启动过了则不会执行。
+
+
 ### Acceptor
 用于处理新连接，是TcpServer的内部类，数据成员：
 - Socket：是Listening socket即server socket
