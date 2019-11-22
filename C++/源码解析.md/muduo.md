@@ -24,9 +24,6 @@ Acceptor::listen()会完成listen系统调用并将channel加入到epoll（loop�
 
 ---
 
-## 在一些代码中的锁的作用
-
-聊天机器人中write()中加锁，并不是为了保护connection()，而是保护了share_ptr类型的connection_，因为它在增加引用的时候不是原子操作。[讲解](https://www.cnblogs.com/lenmom/p/9198126.html)
 
 ## Buffer的设计要点
 - 对外表现成一块连续的内存（char* p, int len），以方便客户代码编写。
