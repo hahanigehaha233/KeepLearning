@@ -1,3 +1,4 @@
 # KeepLearning
-sync-setting: token efc4332e6b17bb462d514481b5093e00eb61be9a
-id: f9d2423b4507d6e20f00133cd0124178
+sync-setting: token 084498aaf3965f365ace7fce0be50df5a1db5369
+
+id: f4db11fba7c0c9113e8ecf41e9887898
