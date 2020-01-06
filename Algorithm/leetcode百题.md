@@ -181,6 +181,8 @@ void quickSort(vector<int>& nums, int l, int r) {
 ```
 这种写法先将mid放入最后，再从头开始比较，依次将比mid小的放入前面位置，到最后所有比mid小的都在前面，再讲mid放入正确位置。其他排序写法[参见](https://leetcode-cn.com/problems/sort-an-array/solution/c-ge-chong-jie-fa-tong-pai-xu-zui-kuai-by-da-li-wa/)
 
+[双路快排，三路快排](https://blog.csdn.net/k_koris/article/details/80585979)
+
 ---
 
 ### 5. 二分查找元素区间
