@@ -33,49 +33,59 @@ true \; \; \; s[i,j] \; is \\
 4. 以下一个字符为中心判断时，如果i没有超过r并且半径范围也在R内，则直接更新，并在下一个字符重复第四步。
 5. 如果i大于了r，或者等于R或者因为镜像节点边境问题，需要重新使用中心扩展。
 ```
-string longestPalindrome(string s) {
-	int len = s.length();
-	if (len < 1) {
-		return "";
-	}
-
-	string ss;
-	for (int i = 0; i < len; ++i) {
-		ss += "#";
-		ss += s[i];
-	}
-	ss += "#";
-
-	int r = 0;
-	int c = 0;
-	int maxr = 0;
-	int maxc = 0;
-	len = ss.length();
-	int* p = new int[len];
-	memset(p, 0, len*sizeof(int));
-
-	for (int i = 0; i < len; ++i) {
-		if (i < r) {
-			p[i] = min(p[2 * c - i], r - i);
-		}
-		else {
-			p[i] = 1;
-		}
-		while (i - p[i] >= 0 && i + p[i] < len && ss[i - p[i]] == ss[i + p[i]]) {
-			p[i]++;
-		}
-		if (i + p[i] - 1 > r) {
-			r = i + p[i] - 1;
-			c = i;
-		}
-		if (maxr <= p[i]) {
-			maxr = p[i];
-			maxc = i;
-		}
-
-	}
-	return s.substr((maxc - maxr + 1) / 2, maxr - 1);
+public String preProcess(String s) {
+    int n = s.length();
+    if (n == 0) {
+        return "^$";
+    }
+    String ret = "^";
+    for (int i = 0; i < n; i++)
+        ret += "#" + s.charAt(i);
+    ret += "#$";
+    return ret;
 }
+
+// 马拉车算法
+public String longestPalindrome2(String s) {
+    String T = preProcess(s);
+    int n = T.length();
+    int[] P = new int[n];
+    int C = 0, R = 0;
+    for (int i = 1; i < n - 1; i++) {
+        int i_mirror = 2 * C - i;
+        if (R > i) {
+            P[i] = Math.min(R - i, P[i_mirror]);// 防止超出 R
+        } else {
+            P[i] = 0;// 等于 R 的情况
+        }
+
+        // 碰到之前讲的三种情况时候，需要利用中心扩展法
+        while (T.charAt(i + 1 + P[i]) == T.charAt(i - 1 - P[i])) {
+            P[i]++;
+        }
+
+        // 判断是否需要更新 R
+        if (i + P[i] > R) {
+            C = i;
+            R = i + P[i];
+        }
+
+    }
+
+    // 找出 P 的最大值
+    int maxLen = 0;
+    int centerIndex = 0;
+    for (int i = 1; i < n - 1; i++) {
+        if (P[i] > maxLen) {
+            maxLen = P[i];
+            centerIndex = i;
+        }
+    }
+    int start = (centerIndex - maxLen) / 2; //最开始讲的求原字符串下标
+    return s.substring(start, start + maxLen);
+}
+
+
 ```
 
 ### 2.公共子序列
