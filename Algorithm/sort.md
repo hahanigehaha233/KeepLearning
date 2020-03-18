@@ -15,6 +15,41 @@
 - [桶排序动图](https://blog.csdn.net/developer1024/article/details/79770240)
 
 
+## 堆排序
+
+```
+    void heapSort(vector<int>& nums){
+        int len = nums.size();
+        for(int i = len / 2 - 1; i >= 0;i--){
+            adjustHeap(nums,i,len);
+        }
+        for(int i = len - 1; i > 0; --i){
+            swap(nums,0,i);
+            adjustHeap(nums,0,i);
+        }
+    }
+    void adjustHeap(vector<int>& nums,int i,int len){
+        //int temp = nums[i];
+        for(int j = i*2 + 1;j < len; j = j*2 + 1){
+            if(j + 1 < len && nums[j + 1] > nums[j]){
+                j++;
+            }
+            if(nums[j] > nums[i]){
+                swap(nums,j,i);
+                i = j;
+            }else{
+                break;
+            }
+        }
+        //nums[i] = temp;
+    }
+    void swap(vector<int>& nums, int a, int b){
+        int t = nums[a];
+        nums[a] = nums[b];
+        nums[b] = t;
+    }
+```
+
 ## 计数排序
 时间复杂度 $O(N+K)$
 
